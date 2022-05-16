@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>验证码识别</title>
+    <script>
+        function handleFiles(files) {
+            var preview = document.getElementById('preview');
+            for (var i = 0; i < files.length; i++) {
+                var file = files[i];
+                var imageType = /^image\//;
+
+                if ( !imageType.test(file.type) ) {
+                continue;
+                }
+
+                var img = document.createElement("img");
+                img.classList.add("obj");
+                img.file = file;
+                // 假设 "preview" 是将要展示图片的 div
+                preview.appendChild(img);
+
+                var reader = new FileReader();
+                reader.onload = (function(aImg) {
+                return function(e) {
+                    aImg.src = e.target.result;
+                };
+                })(img);
+                reader.readAsDataURL(file);
+            }
+        }
+    </script>
+    <style>
+        .div{
+            width: 400px;
+            height: 400px;
+            margin: 100px auto;
+            margin-left: 660px;
+        }
+    </style>
+</head>
+<body>
+    <div class="div">
+
+    <h3 >验证码识别</h3>
+    <form method="post" action="/split" enctype="multipart/form-data">
+        <input type="file" id="input" name="image" onchange="handleFiles(this.files)">
+        <br /><br />
+        <div id = "preview"></div>
+        <br />
+        <input type="submit" value="分割" name="split"><br /><br />
+        <!-- <button type="button" onclick="">分割</button>><br /> -->
+        <img id="img0" src="data:;base64,{{ img_stream_[0] }} ">&nbsp;
+        <img id="img1" src="data:;base64,{{ img_stream_[1] }} ">&nbsp;
+        <img id="img2" src="data:;base64,{{ img_stream_[2] }} ">&nbsp;
+        <img id="img3" src="data:;base64,{{ img_stream_[3] }} ">
+        <br /><br />
+    </form>
+
+    <form method="post" action="/predict" enctype="multipart/form-data">
+        <input type="submit" value="预测"><br />
+    </form>
+
+    </div>
+</body>
+</html>
